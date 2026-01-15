@@ -643,7 +643,7 @@
                     Reply: data[key].reply || data[key].Reply || 'Wait',
                     Message: data[key].message || '',
                     Time: data[key].time || data[key].Time
-                })) : [];
+                })).sort((a, b) => new Date(b.Time) - new Date(a.Time)) : [];
                 updateDashboard();
                 renderActivity();
             });
