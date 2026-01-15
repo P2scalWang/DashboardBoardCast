@@ -420,14 +420,18 @@
                     style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
             </div>
             <div style="margin-bottom:15px;"><label
-                    style="display:block;margin-bottom:5px;font-weight:bold;">สาขา</label><input type="text"
-                    id="empBranch"
-                    style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+                    style="display:block;margin-bottom:5px;font-weight:bold;">สาขา</label>
+                <select id="empBranch"
+                    style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;background:white;">
+                    <option value="">-- เลือกสาขา --</option>
+                </select>
             </div>
             <div style="margin-bottom:15px;"><label
-                    style="display:block;margin-bottom:5px;font-weight:bold;">แผนก</label><input type="text"
-                    id="empDept"
-                    style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+                    style="display:block;margin-bottom:5px;font-weight:bold;">แผนก</label>
+                <select id="empDept"
+                    style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;background:white;">
+                    <option value="">-- เลือกแผนก --</option>
+                </select>
             </div>
             <div class="modal-buttons">
                 <button class="btn-modal" style="background:#e2e8f0;color:#475569;"
@@ -605,6 +609,8 @@
         let employeesData = [];
         let pieChart, barChart;
         let currentAction = 'add';
+        let allBranches = [];
+        let allDepartments = [];
 
         // ==================== Auth ====================
         window.handleLogin = async function () {
@@ -657,8 +663,14 @@
             onValue(ref(database, 'config'), (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    if (data.branches) bcRenderBranches(data.branches);
-                    if (data.departments) bcRenderDepartments(data.departments);
+                    if (data.branches) {
+                        allBranches = data.branches;
+                        bcRenderBranches(data.branches);
+                    }
+                    if (data.departments) {
+                        allDepartments = data.departments;
+                        bcRenderDepartments(data.departments);
+                    }
                 }
             });
         }
@@ -736,8 +748,29 @@
             document.getElementById('empKey').value = key;
             document.getElementById('empId').value = empId;
             document.getElementById('empName').value = name;
-            document.getElementById('empBranch').value = branch;
-            document.getElementById('empDept').value = dept;
+
+            // Populate Branch Select
+            const branchSelect = document.getElementById('empBranch');
+            branchSelect.innerHTML = '<option value="">-- เลือกสาขา --</option>';
+            allBranches.forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b;
+                opt.textContent = b;
+                if (b === branch) opt.selected = true;
+                branchSelect.appendChild(opt);
+            });
+
+            // Populate Dept Select
+            const deptSelect = document.getElementById('empDept');
+            deptSelect.innerHTML = '<option value="">-- เลือกแผนก --</option>';
+            allDepartments.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.textContent = d;
+                if (d === dept) opt.selected = true;
+                deptSelect.appendChild(opt);
+            });
+
             document.getElementById('modalOverlay').style.display = 'flex';
         };
 
